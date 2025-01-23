@@ -50,13 +50,28 @@ export default class CycleOPediaClass extends Component {
       return { studentCount: 0 };
     });
   };
+
+  handleToggleInstructor = () => {
+    this.setState((prevState) => {
+      return { hideInstructor: !prevState.hideInstructor };
+    });
+  };
   render() {
-    console.log("Render Component");
     return (
       <>
-        {this.state.instructor && (
-          <Instructor instructor={this.state.instructor} />
-        )}
+        <div className="p-3">
+          <span className="h4 text-success">Instructor&nbsp;</span>
+          <i
+            className={`bi ${
+              this.state.hideInstructor ? "bi-toggle-off" : "bi-toggle-on"
+            } btn btn-success btn-sm`}
+            onClick={this.handleToggleInstructor}
+          ></i>
+          {!this.state.hideInstructor ? (
+            <Instructor instructor={this.state.instructor} />
+          ) : null}
+        </div>
+
         <div className="p-3">
           <span className="h4 text-success">Feedback</span>
           <br />
