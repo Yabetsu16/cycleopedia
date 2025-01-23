@@ -1,50 +1,103 @@
 import React, { Component } from "react";
 import { getRandomUser } from "./Utility/api";
+import Instructor from "./Instructor";
 
 export default class CycleOPediaClass extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.state = JSON.parse(localStorage.getItem("cyclecopediaState")) || {
       instructor: undefined,
       studentList: [],
       studentCount: 0,
       hideInstructor: false,
+      inputName: "",
+      inputFeedback: "",
     };
   }
 
   componentDidMount = async () => {
-    const response = await getRandomUser();
+    if (JSON.parse(localStorage.getItem("cyclecopediaState"))) {
+      //this.setState(JSON.parse(localStorage.getItem("cyclecopediaState")));
+    } else {
+      const response = await getRandomUser();
+      this.setState((prevState) => {
+        return {
+          instructor: {
+            name: response.data.first_name + " " + response.data.last_name,
+            email: response.data.email,
+            phone_number: response.data.phone_number,
+          },
+        };
+      });
+    }
+  };
+
+  componentDidUpdate() {
+    localStorage.setItem("cyclecopediaState", JSON.stringify(this.state));
+  }
+
+  componentWillUnmount() {}
+
+  handleAddStudent = () => {
     this.setState((prevState) => {
-      return {
-        instructor: {
-          name: response.data.first_name + " " + response.data.last_name,
-          email: response.data.email,
-          phone_number: response.data.phone_number,
-        },
-      };
+      return { studentCount: prevState.studentCount + 1 };
     });
   };
 
-  componentDidUpdate() {}
-
-  componentWillUnmount() {}
+  handleRemoveAllStudent = () => {
+    this.setState((prevState) => {
+      return { studentCount: 0 };
+    });
+  };
   render() {
     console.log("Render Component");
     return (
       <>
         {this.state.instructor && (
-          <div className="p-3">
-            <span className="h4 text-success">Instructor</span>
-            <i className="bi bi-toggle-off btn btn-success btn-sm"></i>
-            <br />
-            Name: {this.state.instructor.name}
-            <br />
-            Email: {this.state.instructor.email}
-            <br />
-            Phone: {this.state.instructor.phone_number}
-          </div>
+          <Instructor instructor={this.state.instructor} />
         )}
+        <div className="p-3">
+          <span className="h4 text-success">Feedback</span>
+          <br />
+          <input
+            type="text"
+            value={this.state.inputName}
+            onChange={(e) => {
+              this.setState({ inputName: e.target.value });
+            }}
+            placeholder="Name..."
+          />{" "}
+          Value: {this.state.inputName}
+          <br />
+          <textarea
+            type="text"
+            value={this.state.inputFeedback}
+            onChange={(e) => {
+              this.setState({ inputFeedback: e.target.value });
+            }}
+            placeholder="Feedback..."
+          />{" "}
+          Value: {this.state.inputFeedback}
+        </div>
+        <div className="p-3">
+          <span className="h4 text-success">Students</span>
+          <br />
+          <div>Student Count: {this.state.studentCount}</div>
+          <button
+            className="btn btn-success btn-sm"
+            onClick={this.handleAddStudent}
+          >
+            Add Student
+          </button>
+          &nbsp;
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={this.handleRemoveAllStudent}
+          >
+            Remove All Students
+          </button>
+        </div>
       </>
     );
   }
