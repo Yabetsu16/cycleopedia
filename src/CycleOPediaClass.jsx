@@ -17,20 +17,16 @@ export default class CycleOPediaClass extends Component {
   }
 
   componentDidMount = async () => {
-    if (JSON.parse(localStorage.getItem("cyclecopediaState"))) {
-      //this.setState(JSON.parse(localStorage.getItem("cyclecopediaState")));
-    } else {
-      const response = await getRandomUser();
-      this.setState((prevState) => {
-        return {
-          instructor: {
-            name: response.data.first_name + " " + response.data.last_name,
-            email: response.data.email,
-            phone_number: response.data.phone_number,
-          },
-        };
-      });
-    }
+    const response = await getRandomUser();
+    this.setState((prevState) => {
+      return {
+        instructor: {
+          name: response.data.first_name + " " + response.data.last_name,
+          email: response.data.email,
+          phone_number: response.data.phone_number,
+        },
+      };
+    });
   };
 
   componentDidUpdate = async (prevProps, prevState) => {
@@ -84,7 +80,7 @@ export default class CycleOPediaClass extends Component {
             } btn btn-success btn-sm`}
             onClick={this.handleToggleInstructor}
           ></i>
-          {!this.state.hideInstructor ? (
+          {!this.state.hideInstructor && this.state.instructor ? (
             <Instructor instructor={this.state.instructor} />
           ) : null}
         </div>
